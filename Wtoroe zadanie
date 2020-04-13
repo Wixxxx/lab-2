@@ -1,0 +1,194 @@
+#include "pch.h"
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
+#include <string>
+
+using namespace std;
+
+
+void Fill_file(string filename, int n) {
+	int a = 0;
+	ofstream F; // создание файловой переменной, поток для записи в файл
+	F.open(filename, ios::trunc); // открытие файла на запись, режим "очистить файл"
+	if (F.fail()) // если открытие файла прошло некорректно, то
+	{
+		cerr << "Ошибка открытия файла. Проверьте местоположение и имя файла! \n"; // вывод сообщения об ошибке
+	}
+	else
+	{
+		// цикл для ввода целых чисел и записи их в файл
+		srand((unsigned)time(NULL)); // генерация произвольной последовательности случайных чисел
+		for (int i = 0; i < n; i++)
+		{
+			a = rand() % (-100 - 100 + 1) - 100;
+			F << a << '\n'; // запись в поток чисел, введенных с клавиатуры с разделением пробелом
+
+		}
+		F.close(); // закрытие потока
+	}
+}
+
+void Read_file(int *mas, string filename, int n) {
+
+
+
+	ifstream F1(filename); // создание файловой переменной, поток для чтения из файла
+	for (int i = 0; i < n; i++)
+	{
+		F1 >> mas[i];
+	}
+	F1.close(); // закрытие потока
+
+	cout << "Содержимое файла" << filename << endl;
+	for (int i = 0; i < n; i++) // вывод на экран содержимого массива
+	{
+		cout << mas[i] << ", ";
+	}
+
+}
+
+void Print_matrix(int** matrix, int n) {
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cout << matrix[i][j] << "\t";
+		}
+		cout << endl;
+	}
+}
+
+void Print_vector(int* mas, int n) {
+	for (int i = 0; i < n; i++)
+	{
+		cout << mas[i] << "\t";
+	}
+}
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");
+	string filename = "numbers.txt";
+	int numbers = 100;
+	int z = 0;
+	bool check = true;
+	do {
+		if (z == 1) {
+			cout << "Хотите еще? \nНажмите 1 чтобы продолжить\nНажмите 0 чтобы остановить\n";
+			cin >> z;
+
+			while (z < 0 && z > 1) {
+				cout << "Неверное знвчение.\nНажмите 1 чтобы продолжить\nНажмите 0 чтобы остановить\n";
+				cin >> z;
+			}
+			if (z == 0) check = false;
+		}
+
+		if (!check)break;
+
+		Fill_file(filename, numbers);
+
+		int* mas = new int[numbers]; // создание динамического массива для данных из файла
+
+		Read_file(mas, filename, numbers);
+		cout << endl;
+		int size = 0;
+		cout << "Введите размер матриц и векторов: ";
+		cin >> size;
+
+
+
+		int n, m;
+		cout << "Введите n (n < размер массива): ";
+		cin >> n;
+		while (n > size) {
+			cout << "Введенное значение больше чем размер матрицы. Введите n (n < размер массива): ";
+			cin >> n;
+		}
+
+		cout << "Введите m (m < размер массива): ";
+		cin >> m;
+
+
+		while (m > size) {
+			cout << "Введенное значение больше чем размер матрицы. Введите n (n < размер массива): ";
+			cin >> m;
+		}
+
+		cout << endl;
+
+		//Создание динамической матрицы A
+		int** A;
+		A = new int*[size];
+		for (int i = 0; i < size; i++)
+			A[i] = new int[size];
+
+		//Создание динамической матрицы C
+		int** C;
+		C = new int*[size];
+		for (int i = 0; i < size; i++)
+			C[i] = new int[size];
+
+		// создание векторов B и D
+		int* B = new int[size];
+		int* D = new int[size];
+
+		int k = 0;
+		//Заполнение матрицы и векторов значениями из файла и выведение на экран
+		for (int i = 0; i < size; i++)
+		{
+			if (k == numbers - 1) k = 0;
+
+			B[i] = mas[k];
+			k++;
+			D[i] = mas[k];
+			k++;
+			for (int j = 0; j < size; j++)
+			{
+				A[i][j] = mas[k];
+				k++;
+				C[i][j] = mas[k];
+				k++;
+			}
+		}
+
+
+		cout << "Матрица A:" << endl;
+		Print_matrix(A, size);
+		cout << endl;
+
+		cout << "Матрица C:" << endl;
+		Print_matrix(C, size);
+		cout << endl;
+
+		cout << "Вектор B:" << endl;
+		Print_vector(B, size);
+		cout << endl;
+
+		cout << "Вектор D:" << endl;
+		Print_vector(D, size);
+		cout << endl;
+
+
+		int result = 0;
+		result = -2 * A[n][n] - B[n] * D[m] * C[m][n];
+
+		cout << endl << "Result = " << result;
+		cout << endl << endl << "_________________________________________________" << endl << endl;
+		//Удаление матрицы A
+		for (int i = 0; i < size; i++)
+			delete[] A[i];
+
+		//Удаление матрицы C
+		for (int i = 0; i < size; i++)
+			delete[] C[i];
+
+		delete[] mas; // высвобождение памяти
+		z = 1;
+	} while (z = 1);
+
+}
+
